@@ -11,7 +11,7 @@ from embedder import GraphNetwork
 
 from tensorboardX import SummaryWriter
 
-from data import QM9
+from torch_geometric.datasets import QM9
 
 
 def test(model, data_loader, criterion, device):
@@ -91,7 +91,7 @@ def main():
 
     # Model selection
     model = GraphNetwork(args.M, args.N, n_atom_feat, hidden_dim + 3, hidden_dim, device).to(device)
-    print(model)
+    #print(model)
     
     optimizer = torch.optim.Adam(model.parameters(), lr=args.lr, weight_decay=1e-5)
     criterion = nn.MSELoss()
@@ -127,8 +127,8 @@ def main():
             optimizer.step()
             train_loss += torch.sqrt(loss)
             count += 1
-
-            sys.stdout.write('\repoch {}/{} batch {}/{} --> train_loss : {:.4f}'.format(epoch + 1, args.epochs, bc + 1, num_batch + 1, train_loss/count))
+            if (epoch + 1) % 50 == 0:
+                sys.stdout.write('\repoch {}/{} batch {}/{} --> train_loss : {:.4f}'.format(epoch + 1, args.epochs, bc + 1, num_batch + 1, train_loss/count))
             sys.stdout.flush()
         
         writer.add_scalar("loss/train_loss", train_loss/count, epoch)
